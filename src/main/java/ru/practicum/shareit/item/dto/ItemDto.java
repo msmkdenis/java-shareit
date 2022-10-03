@@ -3,14 +3,11 @@ package ru.practicum.shareit.item.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import ru.practicum.shareit.item.Create;
+import ru.practicum.shareit.Create;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")

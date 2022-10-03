@@ -6,17 +6,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.Create;
-import ru.practicum.shareit.item.Update;
+import ru.practicum.shareit.Create;
+import ru.practicum.shareit.Update;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
@@ -26,7 +22,7 @@ public class ItemController {
     private static final String X_SHARER_USER_ID = "X-Sharer-User-Id";
 
     @GetMapping
-    public List<Item> findAll(@RequestHeader(X_SHARER_USER_ID) int userId) {
+    public List<ItemDto> findAll(@RequestHeader(X_SHARER_USER_ID) int userId) {
         log.info("Вызван метод findAll() в ItemController");
         return itemService.findAll(userId);
     }
@@ -59,7 +55,7 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<Item> searchItem(@RequestParam String text, @RequestHeader(X_SHARER_USER_ID) int userId) {
+    public List<ItemDto> searchItem(@RequestParam String text, @RequestHeader(X_SHARER_USER_ID) int userId) {
         log.info("Вызван метод search() в ItemController");
         return itemService.search(text, userId);
     }
