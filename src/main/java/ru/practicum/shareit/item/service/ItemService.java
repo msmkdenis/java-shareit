@@ -1,12 +1,11 @@
 package ru.practicum.shareit.item.service;
 
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
 
 public interface ItemService {
-    List<Item> findAll(int userId);
+    List<ItemDto> findAll(int userId);
 
     ItemDto findById(int id);
 
@@ -16,5 +15,5 @@ public interface ItemService {
 
     void delete(int id);
 
-    List<Item> search(String text, int userId);
+    List<ItemDto> search(String text, int userId);
 }

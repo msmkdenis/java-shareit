@@ -6,23 +6,14 @@ import lombok.EqualsAndHashCode;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
-/**
- * TODO Sprint add-controllers.
- */
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 public class Item {
     private int id;
     private User owner;
-    @NotBlank
     private String name;
-    @NotBlank
     private String description;
-    @NotNull
     private Boolean available;
     private ItemRequest request;
 

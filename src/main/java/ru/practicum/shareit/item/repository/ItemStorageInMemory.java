@@ -5,38 +5,42 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
-public class ItemRepository {
-    private final List<Item> items = new ArrayList<>();
+public class ItemStorageInMemory implements ItemStorage {
+    private final Map<Integer, Item> itemStorage = new HashMap<>();
+    private final Map<Integer, List<Item>> userIndexItemStorage = new HashMap<>();
     private int id = 0;
 
-    public List<Item> findAll(User owner) {
-        return items.stream()
-                .filter(i -> i.getOwner() == owner)
-                .collect(Collectors.toList());
-    }
-
-    public Optional<Item> findById(int id) {
-        return items.stream()
-                .filter(i -> i.getId() == id)
-                .findAny();
-    }
-
+    @Override
     public Item add(Item item, User owner) {
-        item.setId(calcId());
         item.setOwner(owner);
-        items.add(item);
+        final List<Item> itemsList = userIndexItemStorage.computeIfAbsent(item.getOwner().getId(), k -> new ArrayList<>());
+        item.setId(calcId());
+        itemStorage.put(item.getId(), item);
+        itemsList.add(item);
+        userIndexItemStorage.put(owner.getId(), itemsList);
         return item;
     }
 
-    //редактировать можно только название, описание и статус доступа к аренде
+    @Override
+    public List<Item> findAll(User owner) {
+        return userIndexItemStorage.getOrDefault(owner.getId(), Collections.emptyList());
+    }
+
+    @Override
+    public Optional<Item> findById(int id) {
+        if (itemStorage.containsKey(id)) {
+            return Optional.of(itemStorage.get(id));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Item update(Item newItem, Item oldItem) {
         if (newItem.getName() != null) {
             oldItem.setName(newItem.getName());
@@ -50,12 +54,15 @@ public class ItemRepository {
         return oldItem;
     }
 
+    @Override
     public void delete(Item item) {
-        items.remove(item);
+        itemStorage.remove(item.getId());
     }
 
+    @Override
     public List<Item> search(String text) {
         String str = text.toLowerCase();
+        List<Item> items = new ArrayList<>(itemStorage.values());
         Set<Item> itemListByName = items.stream()
                 .filter(Item::getAvailable)
                 .filter(i -> i.getName().toLowerCase().contains(str))

@@ -4,17 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.Create;
+import ru.practicum.shareit.Update;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
-import javax.validation.Valid;
 import java.util.List;
-
-/**
- * TODO Sprint add-controllers.
- */
 
 @RestController
 @RequestMapping(path = "/users")
@@ -24,25 +21,25 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public List<User> findAll() {
+    public List<UserDto> findAll() {
         log.info("Вызван метод findAll() в UserController");
         return userService.findAll();
     }
 
     @GetMapping("/{userId}")
-    public User findById(@PathVariable int userId) {
+    public UserDto findById(@PathVariable int userId) {
         log.info("Вызван метод findById() в UserController");
         return userService.findById(userId);
     }
 
     @PostMapping
-    public User addUser(@Valid @RequestBody UserDto user) {
+    public UserDto addUser(@Validated({Create.class}) @RequestBody UserDto user) {
         log.info("Вызван метод addUser() в UserController");
         return userService.add(user);
     }
 
     @PatchMapping("/{userId}")
-    public User updateUser(@RequestBody UserDto user, @PathVariable int userId) {
+    public UserDto updateUser(@Validated({Update.class}) @RequestBody UserDto user, @PathVariable int userId) {
         log.info("Вызван метод updateUser() в UserController");
         return userService.update(user, userId);
     }
