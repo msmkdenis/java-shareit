@@ -21,15 +21,13 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public List<UserDto> findAll()
-    {
+    public List<UserDto> findAll() {
         log.info("Вызван метод findAll() в UserController");
         return userService.findAll();
     }
 
     @GetMapping("/{userId}")
-    public UserDto findById(@PathVariable int userId)
-    {
+    public UserDto findById(@PathVariable int userId) {
         log.info("Вызван метод findById() в UserController");
         return userService.findById(userId);
     }
@@ -37,8 +35,8 @@ public class UserController {
     @PostMapping
     public UserDto addUser(
             @Validated({Create.class})
-            @RequestBody UserDto user)
-    {
+            @RequestBody UserDto user
+    ) {
         log.info("Вызван метод addUser() в UserController");
         return userService.addUser(user);
     }
@@ -47,15 +45,14 @@ public class UserController {
     public UserDto updateUser(
             @Validated({Update.class})
             @RequestBody UserDto user,
-            @PathVariable int userId)
-    {
+            @PathVariable int userId
+    ) {
         log.info("Вызван метод updateUser() в UserController");
         return userService.updateUser(user, userId);
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<HttpStatus> deleteUser(@PathVariable int userId)
-    {
+    public ResponseEntity<HttpStatus> deleteUser(@PathVariable int userId) {
         log.info("Вызван метод deleteUser() в UserController");
         userService.deleteUser(userId);
         return ResponseEntity.ok().build();

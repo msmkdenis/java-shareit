@@ -21,8 +21,8 @@ public class BookingController {
     @PostMapping
     public BookingResponseDto createBooking(
             @RequestHeader(X_SHARER_USER_ID) int userId,
-            @RequestBody BookingRequestDto bookingRequestDto)
-    {
+            @RequestBody BookingRequestDto bookingRequestDto
+    ) {
         log.info("Вызван метод addBooking() в BookingController");
         return bookingService.addBooking(userId, bookingRequestDto);
     }
@@ -31,8 +31,8 @@ public class BookingController {
     public BookingResponseDto approveBooking(
             @RequestHeader(X_SHARER_USER_ID) int userId,
             @PathVariable int bookingId,
-            @RequestParam boolean approved)
-    {
+            @RequestParam boolean approved
+    ) {
         log.info("Вызван метод approveBooking() в BookingController");
         return bookingService.approveBooking(userId, bookingId, approved);
     }
@@ -40,8 +40,8 @@ public class BookingController {
     @GetMapping("/{bookingId}")
     public BookingResponseDto getBookingById(
             @RequestHeader(X_SHARER_USER_ID) int userId,
-            @PathVariable int bookingId)
-    {
+            @PathVariable int bookingId
+    ) {
         log.info("Вызван метод findBookingById() в BookingController");
         return bookingService.findBookingById(userId, bookingId);
     }
@@ -50,8 +50,8 @@ public class BookingController {
     public List<BookingResponseDto> getByUser(
             @RequestHeader(X_SHARER_USER_ID) int userId,
             @RequestParam(value = "state", defaultValue = "ALL")
-            String state)
-    {
+            String state
+    ) {
         log.info("Вызван метод findBookingByUser() в BookingController");
         return bookingService.findBookingByUser(userId, state);
     }
@@ -60,8 +60,8 @@ public class BookingController {
     public List<BookingResponseDto> getByOwner(
             @RequestHeader(X_SHARER_USER_ID) int userId,
             @RequestParam(value = "state", defaultValue = "ALL")
-            String state)
-    {
+            String state
+    ) {
         log.info("Вызван метод findBookingByOwner() в BookingController");
         return bookingService.findBookingByOwner(userId, state);
     }
