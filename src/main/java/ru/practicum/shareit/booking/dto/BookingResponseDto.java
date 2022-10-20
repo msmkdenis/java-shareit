@@ -11,16 +11,10 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 public class BookingResponseDto {
-
     private int id;
-
     private LocalDateTime start;
-
     private LocalDateTime end;
-
     private BookingStatus status;
-
     private User booker;
-
     private Item item;
 }

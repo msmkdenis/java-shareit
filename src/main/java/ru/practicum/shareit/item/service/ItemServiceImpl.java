@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
@@ -40,6 +42,7 @@ public class ItemServiceImpl implements ItemService {
             ItemResponseDto itemResponseDto = getItemResponseDto(item, userId);
             itemDtoResponseList.add(itemResponseDto);
         }
+        log.info("Получены все вещи пользователя c id = {} (findAll())", userId);
         return itemDtoResponseList;
     }
 
@@ -54,6 +57,7 @@ public class ItemServiceImpl implements ItemService {
         }
         Comment comment = new Comment(commentDto.getId(),
                 commentDto.getText(), item, user, LocalDateTime.now());
+        log.info("Комментарий к вещи с id = {} пользователем с id = {} добавлен", itemId, userId);
         return CommentMapper.toCommentDto(commentRepository.save(comment));
     }
 
@@ -62,6 +66,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemResponseDto findItemById(int itemId, int userId) {
         checkUser(userId);
         Item item = checkItem(itemId);
+        log.info("Найдена вещь с id = {} (findItemById())", itemId);
         return getItemResponseDto(item, userId);
     }
 
@@ -72,6 +77,7 @@ public class ItemServiceImpl implements ItemService {
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(owner);
         itemRepository.save(item);
+        log.info("Вещь с id = {} сохранена (addItem())", item.getId());
         return ItemMapper.toItemDto(item);
     }
 
@@ -93,6 +99,7 @@ public class ItemServiceImpl implements ItemService {
         } else {
             throw new EntityNotFoundException("Ошибка! Редактировать информацию о вещи может только ее владелец");
         }
+        log.info("Данные о вещи с id = {} обновлены (updateItem())", oldItem.getId());
         return ItemMapper.toItemDto(itemRepository.save(oldItem));
     }
 
@@ -100,10 +107,12 @@ public class ItemServiceImpl implements ItemService {
     public void deleteItem(int id) {
         Item item = checkItem(id);
         itemRepository.delete(item);
+        log.info("Вещь с id = {} удалена", id);
     }
 
     public List<ItemDto> search(String text, int userId) {
         userRepository.findById(userId);
+        log.info("Поиск вещи с параметром text = {}", text);
         if (!text.isBlank()) {
             return itemRepository.searchItemsByText(text).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
         }

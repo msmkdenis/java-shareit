@@ -16,11 +16,4 @@ public class ItemResponseDto extends ItemDto {
     private BookingItemDto lastBooking;
     private BookingItemDto nextBooking;
     List<CommentDto> comments;
-
-/*    public ItemResponseDto(int id, String name, String description, Boolean available) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.available = available;
-    }*/
 }

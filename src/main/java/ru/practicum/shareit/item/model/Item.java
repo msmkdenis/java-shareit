@@ -33,10 +33,6 @@ public class Item {
     @Column(name = "is_available", nullable = false)
     private Boolean available;
 
-/*    @ManyToOne
-    @JoinColumn(name = "request_id")
-    private ItemRequest request;*/
-
     public Item(int id, String name, String description, Boolean available) {
         this.id = id;
         this.name = name;

@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
@@ -43,6 +45,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setBooker(booker);
         booking.setItem(item);
         booking.setStatus(BookingStatus.WAITING);
+        log.info("Запрос Booking с id = {} сохранен (addBooking())", booking.getId());
         return BookingMapper.toBookingResponseDto(bookingRepository.save(booking));
     }
 
@@ -55,6 +58,8 @@ public class BookingServiceImpl implements BookingService {
         Item item = booking.getItem();
         checkAccessForApprove(userId, item);
         booking.setStatus(approve ? BookingStatus.APPROVED : BookingStatus.REJECTED);
+        log.info("Статус бронированиня у запроса с id = {} изменен на {} (approveBooking())",
+                booking.getId(), booking.getStatus());
         return BookingMapper.toBookingResponseDto(bookingRepository.save(booking));
     }
 
@@ -66,6 +71,7 @@ public class BookingServiceImpl implements BookingService {
             throw new EntityNotFoundException("Ошибка! " +
                     "Поиск запроса на бронирование по id возможен только для автора запроса или для владельца!");
         }
+        log.info("Найден запрос с id = {} (findBookingById())", booking.getId());
         return BookingMapper.toBookingResponseDto(booking);
     }
 
@@ -116,6 +122,7 @@ public class BookingServiceImpl implements BookingService {
                         .collect(Collectors.toList());
                 break;
         }
+        log.info("Получены все бронирования пользователя с id = {} (findBookingByUser())", userId);
         return bookingList;
     }
 
@@ -163,6 +170,7 @@ public class BookingServiceImpl implements BookingService {
                         .collect(Collectors.toList());
                 break;
         }
+        log.info("Получены все бронирования пользователя с id = {} (findBookingByOwner())", ownerId);
         return bookingList;
     }
 
