@@ -9,9 +9,9 @@ public interface UserService {
 
     UserDto findById(int id);
 
-    UserDto add(UserDto user);
+    UserDto addUser(UserDto user);
 
-    UserDto update(UserDto user, int id);
+    UserDto updateUser(UserDto user, int id);
 
-    void delete(int id);
+    void deleteUser(int id);
 }
