@@ -89,8 +89,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional
     public ItemDto updateItem(ItemDto itemDto, int userId, int itemId) {
-        User owner = userRepository.findById(userId).get();
-        Item oldItem = itemRepository.findById(itemId).get();
+        User owner = checkUser(userId);
+        Item oldItem = checkItem(itemId);
         if (oldItem.getOwner().equals(owner)) {
             if (itemDto.getName() != null) {
                 oldItem.setName(itemDto.getName());

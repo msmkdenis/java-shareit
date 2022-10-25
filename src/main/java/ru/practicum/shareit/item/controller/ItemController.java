@@ -19,6 +19,7 @@ import java.util.List;
 @RequestMapping("/items")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class ItemController {
     private final ItemService itemService;
     private static final String X_SHARER_USER_ID = "X-Sharer-User-Id";
