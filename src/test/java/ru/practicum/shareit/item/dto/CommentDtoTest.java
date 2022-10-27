@@ -1,10 +1,9 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.dto;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
-import ru.practicum.shareit.item.dto.CommentDto;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -25,7 +24,7 @@ class CommentDtoTest {
     );
 
     @Test
-    void testCommentDto() throws IOException {
+    void commentDto() throws IOException {
         var res = json.write(commentDto);
 
         assertThat(res).hasJsonPath("$.id");

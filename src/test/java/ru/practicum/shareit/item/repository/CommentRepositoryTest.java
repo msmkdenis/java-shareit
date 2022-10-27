@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.repository;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.repository.CommentRepository;
-import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -27,21 +25,21 @@ class CommentRepositoryTest {
     UserRepository userRepository;
     @Autowired
     CommentRepository commentRepository;
-    Item item1;
-    User user1;
+    Item item;
+    User user;
     Comment comment;
 
     @BeforeEach
     void beforeEach() {
-        user1 = userRepository.save(new User(1, "user1", "user1@mail.ru"));
-        item1 = itemRepository.save(
-                new Item(1, "item1", "description1", true, user1, null));
-        comment = commentRepository.save(new Comment(1, "text comment", item1, user1, LocalDateTime.now()));
+        user = userRepository.save(new User(1, "user", "user@mail.ru"));
+        item = itemRepository.save(
+                new Item(1, "item", "description", true, user, null));
+        comment = commentRepository.save(new Comment(1, "text comment", item, user, LocalDateTime.now()));
     }
 
     @Test
     void findCommentsByItemId() {
-        List<Comment> comments = commentRepository.findCommentsByItemId(item1.getId());
+        List<Comment> comments = commentRepository.findCommentsByItemId(item.getId());
         assertNotNull(comments);
         assertEquals(1, comments.size());
         assertEquals(comment.getId(), comments.get(0).getId());

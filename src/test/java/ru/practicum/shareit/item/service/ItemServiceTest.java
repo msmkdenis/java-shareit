@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,6 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
@@ -191,7 +190,7 @@ public class ItemServiceTest {
         when(commentRepository.save(any())).thenReturn(comment);
         comment.setText("");
 
-        assertThrows(ValidationException.class,()->itemService.addComment(CommentMapper.toCommentDto(comment),
+        assertThrows(ValidationException.class,() -> itemService.addComment(CommentMapper.toCommentDto(comment),
                 user.getId(), item.getId()));
     }
 

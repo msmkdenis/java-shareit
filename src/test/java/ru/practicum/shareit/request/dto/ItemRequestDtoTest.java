@@ -1,10 +1,9 @@
-package ru.practicum.shareit.request;
+package ru.practicum.shareit.request.dto;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
-import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.user.model.User;
 
 import java.io.IOException;
@@ -19,7 +18,7 @@ public class ItemRequestDtoTest {
     private JacksonTester<ItemRequestDto> json;
 
     @Test
-    void testItemRequestInDto() throws IOException {
+    void ItemRequestDto() throws IOException {
 
         User user = new User(1, "userName", "user@email.ru");
         ItemRequestDto itemRequestDto = new ItemRequestDto(1, "description", user,

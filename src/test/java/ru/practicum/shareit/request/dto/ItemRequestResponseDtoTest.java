@@ -1,11 +1,10 @@
-package ru.practicum.shareit.request;
+package ru.practicum.shareit.request.dto;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -34,7 +33,7 @@ public class ItemRequestResponseDtoTest {
             null);
 
     @Test
-    void testItemRequestOutDto() throws IOException {
+    void ItemRequestResponseDto() throws IOException {
 
         List<ItemDto> items = new ArrayList<>();
         items.add(itemDto);

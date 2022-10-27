@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.booking.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.booking.controller.BookingController;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.model.BookingStatus;
@@ -46,7 +45,7 @@ public class BookingControllerTest {
     BookingRequestDto bookingRequestDto;
 
     @BeforeEach
-    void setUp() {
+    void beforeEach() {
         user = new User(1, "userName", "user@email.ru");
         owner = new User(2, "ownerName", "owner@email");
         item = new Item(1, "item1", "description1", true, user, null);

@@ -1,4 +1,4 @@
-package ru.practicum.shareit.request;
+package ru.practicum.shareit.request.service;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,8 +13,6 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
-import ru.practicum.shareit.request.service.ItemRequestService;
-import ru.practicum.shareit.request.service.ItemRequestServiceImpl;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -48,7 +46,7 @@ public class ItemRequestServiceTest {
     ItemRequestDto itemRequestDto;
 
     @BeforeEach
-    void setUp() {
+    void beforeEach() {
         itemRequestService = new ItemRequestServiceImpl(itemRequestRepository, userRepository, itemRepository);
         user = new User(1, "userName", "user@email.ru");
         item = new Item(1, "item1", "description1", true, user, null);

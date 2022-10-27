@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,8 +11,6 @@ import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.booking.service.BookingServiceImpl;
 import ru.practicum.shareit.exception.BookingStateException;
 import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.exception.MessageFailedException;
@@ -50,7 +48,7 @@ public class BookingServiceTest {
     BookingRequestDto bookingRequestDto;
 
     @BeforeEach
-    void setUp() {
+    void beforeEach() {
         bookingService = new BookingServiceImpl(bookingRepository, userRepository, itemRepository);
         user = new User(1, "userName", "user@email.ru");
         owner = new User(2, "ownerName", "owner@email");
@@ -99,7 +97,7 @@ public class BookingServiceTest {
         when(bookingRepository.save(any())).thenReturn(booking);
 
         Exception ex = assertThrows(EntityNotFoundException.class,
-                ()-> bookingService.addBooking(user.getId(), bookingRequestDto));
+                () -> bookingService.addBooking(user.getId(), bookingRequestDto));
         assertEquals("Ошибка! Пользователь с id = 1 не найден", ex.getMessage());
     }
 
@@ -179,7 +177,7 @@ public class BookingServiceTest {
 
         booking.setStatus(BookingStatus.APPROVED);
 
-        assertThrows(BookingStateException.class, ()-> bookingService.approveBooking(owner.getId(),
+        assertThrows(BookingStateException.class, () -> bookingService.approveBooking(owner.getId(),
                 booking.getId(), true));
     }
 

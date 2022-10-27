@@ -1,4 +1,4 @@
-package ru.practicum.shareit.request;
+package ru.practicum.shareit.request.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.request.controller.ItemRequestController;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
@@ -55,8 +54,7 @@ class ItemRequestControllerTest {
 
     @Test
     void createItemRequest() throws Exception {
-        when(itemRequestService.addItemRequest(anyInt(), any()))
-                .thenReturn(itemRequestResponseDto);
+        when(itemRequestService.addItemRequest(anyInt(), any())).thenReturn(itemRequestResponseDto);
 
         mockMvc.perform(post("/requests")
                         .content(mapper.writeValueAsString(itemRequestDto))
@@ -95,8 +93,7 @@ class ItemRequestControllerTest {
 
     @Test
     void getAllByOwner() throws Exception {
-        when(itemRequestService.findItemRequestByOwner(anyInt()))
-                .thenReturn(List.of(itemRequestResponseDto));
+        when(itemRequestService.findItemRequestByOwner(anyInt())).thenReturn(List.of(itemRequestResponseDto));
 
         mockMvc.perform(get("/requests")
                         .header("X-Sharer-User-Id", 1))
@@ -106,8 +103,7 @@ class ItemRequestControllerTest {
 
     @Test
     void getRequestById() throws Exception {
-        when(itemRequestService.findRequestById(anyInt(), anyInt()))
-                .thenReturn(itemRequestResponseDto);
+        when(itemRequestService.findRequestById(anyInt(), anyInt())).thenReturn(itemRequestResponseDto);
 
         mockMvc.perform(get("/requests/{requestId}", itemRequestDto.getId())
                         .header("X-Sharer-User-Id", 1))

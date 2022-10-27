@@ -1,10 +1,9 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.dto;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
-import ru.practicum.shareit.item.dto.ItemDto;
 
 import java.io.IOException;
 
@@ -18,7 +17,7 @@ public class ItemDtoTest {
     private final ItemDto itemDto = new ItemDto(1,"name","description",true,null);
 
     @Test
-    void testItemDto() throws IOException {
+    void itemDto() throws IOException {
         var res = json.write(itemDto);
 
         assertThat(res).hasJsonPath("$.id");
