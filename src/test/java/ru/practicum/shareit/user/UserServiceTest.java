@@ -2,11 +2,9 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
@@ -16,11 +14,11 @@ import ru.practicum.shareit.user.service.UserService;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
@@ -37,9 +35,7 @@ public class UserServiceTest {
 
     @Test
     void addUser() {
-        Mockito
-                .when(userRepository.save(any()))
-                .thenReturn(user);
+        when(userRepository.save(any())).thenReturn(user);
 
         UserDto userDto = userService.addUser(UserMapper.toUserDto(user));
 
@@ -50,12 +46,8 @@ public class UserServiceTest {
 
     @Test
     void findById() {
-        Mockito
-                .when(userRepository.save(any()))
-                .thenReturn(user);
-        Mockito
-                .when(userRepository.findById(any()))
-                .thenReturn(Optional.of(user));
+        when(userRepository.save(any())).thenReturn(user);
+        when(userRepository.findById(any())).thenReturn(Optional.of(user));
 
         UserDto userDto = userService.findById(user.getId());
 
@@ -81,9 +73,7 @@ public class UserServiceTest {
 
     @Test
     void findAll() {
-        Mockito
-                .when(userRepository.findAll())
-                .thenReturn(List.of(user));
+        when(userRepository.findAll()).thenReturn(List.of(user));
 
         List<UserDto> users = userService.findAll();
 

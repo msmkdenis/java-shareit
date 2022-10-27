@@ -2,13 +2,9 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -21,23 +17,20 @@ import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import javax.validation.ValidationException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -99,6 +92,16 @@ public class ItemServiceTest {
         assertEquals(newItem.getDescription(), newItemDto.getDescription());
         assertEquals(newItem.getAvailable(), newItemDto.getAvailable());
 
+    }
+
+    @Test
+    void deleteItem() {
+        when(itemRepository.findById(anyInt())).thenReturn(Optional.of(item));
+
+        itemService.deleteItem(ItemMapper.toItemDto(item).getId());
+        List<Item> items = itemRepository.findAll();
+
+        assertEquals(0, items.size());
     }
 
     @Test
@@ -178,6 +181,21 @@ public class ItemServiceTest {
     }
 
     @Test
+    void addBlankComment() {
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
+        when(userRepository.save(any())).thenReturn(user);
+        when(itemRepository.findById(anyInt())).thenReturn(Optional.of(item));
+        when(itemRepository.save(any())).thenReturn(item);
+        when(bookingRepository.existsByItemIdAndBookerIdAndEndBefore(anyInt(), anyInt(), any()))
+                .thenReturn(Boolean.TRUE);
+        when(commentRepository.save(any())).thenReturn(comment);
+        comment.setText("");
+
+        assertThrows(ValidationException.class,()->itemService.addComment(CommentMapper.toCommentDto(comment),
+                user.getId(), item.getId()));
+    }
+
+    @Test
     void addItemWithWrongUserId() {
         ItemDto itemDto = ItemMapper.toItemDto(item);
         assertThrows(EntityNotFoundException.class, () -> itemService.addItem(itemDto, 999));
@@ -216,52 +234,4 @@ public class ItemServiceTest {
         itemDto.setDescription("");
         assertThrows(ValidateException.class, () -> itemService.addItem(itemDto, user.getId()));
     }
-
-
-
-
-
-/*
-
-    @Transactional
-    public void deleteItem(int id) {
-        Item item = checkItem(id);
-        itemRepository.delete(item);
-        log.info("Вещь с id = {} удалена", id);
-    }
-
-    private ItemResponseDto getItemResponseDto(Item item, int userId) {
-        List<Booking> bookingList;
-        LocalDateTime now = LocalDateTime.now();
-        Booking lastBooking;
-        Booking nextBooking;
-        bookingList = bookingRepository.findAllByItemsId(item.getId());
-        List<CommentDto> comments = commentRepository.findCommentsByItemId(item.getId()).stream()
-                .map(CommentMapper::toCommentDto)
-                .collect(Collectors.toList());
-        if (bookingList.isEmpty()) {
-            lastBooking = null;
-            nextBooking = null;
-        } else {
-            lastBooking = bookingRepository.findLastBookingByItemId(item.getId(), userId, now)
-                    .stream().findFirst().orElse(null);
-            nextBooking = bookingRepository.findNextBookingByItemId(item.getId(), userId, now)
-                    .stream().findFirst().orElse(null);
-        }
-        return ItemMapper.toItemResponseDto(item, lastBooking, nextBooking, comments);
-    }
-
-    private void checkCommentAuthor(int userId, int itemId) {
-        if (!(bookingRepository.existsByItemIdAndBookerIdAndEndBefore(itemId, userId, LocalDateTime.now()))) {
-            throw new ValidationException(
-                    String.format("Пользователь id=%d не арендовал вещь id=%d или аренда не завершена!", userId, itemId)
-            );
-        }
-    }
-
-    private ItemRequest checkItemRequest(int id) {
-        return itemRequestRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Ошибка! " +
-                        "Запрос(request) с id = %s не найден", id)));
-    }*/
 }

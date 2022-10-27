@@ -214,9 +214,9 @@ public class BookingServiceImpl implements BookingService {
         if (bookingRequestDto.getStart().isBefore(LocalDateTime.now())) {
             throw new ValidationException("Ошибка! Дата начала не может быть раньше текущей даты!");
         }
-        if (bookingRequestDto.getEnd().isBefore(LocalDateTime.now())) {
+/*        if (bookingRequestDto.getEnd().isBefore(LocalDateTime.now())) {
             throw new ValidationException("Ошибка! Дата окончания не может быть раньше текущей даты!");
-        }
+        }*/
     }
 
     private User checkUser(int id) {

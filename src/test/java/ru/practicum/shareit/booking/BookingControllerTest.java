@@ -9,30 +9,22 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.controller.BookingController;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.item.controller.ItemController;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.request.service.ItemRequestServiceImpl;
 import ru.practicum.shareit.user.model.User;
 
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -47,9 +39,8 @@ public class BookingControllerTest {
     @Autowired
     ObjectMapper mapper;
 
-
-
     User user;
+    User owner;
     Item item;
     BookingResponseDto bookingResponseDto;
     BookingRequestDto bookingRequestDto;
@@ -57,6 +48,7 @@ public class BookingControllerTest {
     @BeforeEach
     void setUp() {
         user = new User(1, "userName", "user@email.ru");
+        owner = new User(2, "ownerName", "owner@email");
         item = new Item(1, "item1", "description1", true, user, null);
         bookingResponseDto = new BookingResponseDto(
                 1,
@@ -81,67 +73,96 @@ public class BookingControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(bookingResponseDto.getId()), Integer.class))
-                .andExpect(jsonPath("$.booker.id", is(bookingResponseDto.getBooker().getId()), Integer.class))
-                .andExpect(jsonPath("$.item.id", is(bookingResponseDto.getItem().getId()), Integer.class))
+                .andExpect(jsonPath("$.booker", is(bookingResponseDto.getBooker()), User.class))
+                .andExpect(jsonPath("$.item", is(bookingResponseDto.getItem()), Item.class))
                 .andExpect(jsonPath("$.status", is(bookingResponseDto.getStatus().toString())));
 
         verify(bookingService, times(1)).addBooking(anyInt(), any());
     }
 
+    @Test
+    void approveBooking() throws Exception {
+        when(bookingService.approveBooking(anyInt(), anyInt(), anyBoolean())).thenReturn(bookingResponseDto);
 
-   /* @PostMapping
-    public BookingResponseDto createBooking(
-            @RequestHeader(X_SHARER_USER_ID) int userId,
-            @RequestBody BookingRequestDto bookingRequestDto
-    ) {
-        log.info("Вызван метод addBooking() в BookingController");
-        return bookingService.addBooking(userId, bookingRequestDto);
+        mockMvc.perform(patch("/bookings/{bookingId}", bookingResponseDto.getId())
+                        .header("X-Sharer-User-Id", "1")
+                        .content(mapper.writeValueAsString(bookingResponseDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .param("approved", "true"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(bookingResponseDto.getId()), Integer.class))
+                .andExpect(jsonPath("$.booker", is(bookingResponseDto.getBooker()), User.class))
+                .andExpect(jsonPath("$.item", is(bookingResponseDto.getItem()), Item.class))
+                .andExpect(jsonPath("$.status", is(bookingResponseDto.getStatus().toString())));
+
+        verify(bookingService, times(1)).approveBooking(anyInt(), anyInt(), anyBoolean());
     }
 
-    @PatchMapping("/{bookingId}")
-    public BookingResponseDto approveBooking(
-            @RequestHeader(X_SHARER_USER_ID) int userId,
-            @PathVariable int bookingId,
-            @RequestParam boolean approved
-    ) {
-        log.info("Вызван метод approveBooking() в BookingController");
-        return bookingService.approveBooking(userId, bookingId, approved);
+    @Test
+    void getById() throws Exception {
+        when(bookingService.findBookingById(anyInt(), anyInt())).thenReturn(bookingResponseDto);
+
+        mockMvc.perform(get("/bookings/{bookingId}", bookingResponseDto.getId())
+                        .header("X-Sharer-User-Id", "1")
+                        .content(mapper.writeValueAsString(bookingResponseDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(bookingResponseDto.getId()), Integer.class))
+                .andExpect(jsonPath("$.booker", is(bookingResponseDto.getBooker()), User.class))
+                .andExpect(jsonPath("$.item", is(bookingResponseDto.getItem()), Item.class));
+
+        verify(bookingService, times(1)).findBookingById(anyInt(), anyInt());
     }
 
-    @GetMapping("/{bookingId}")
-    public BookingResponseDto getBookingById(
-            @RequestHeader(X_SHARER_USER_ID) int userId,
-            @PathVariable int bookingId
-    ) {
-        log.info("Вызван метод findBookingById() в BookingController");
-        return bookingService.findBookingById(userId, bookingId);
+    @Test
+    void getByUser() throws Exception {
+        when(bookingService.findBookingByUser(anyInt(), anyString(), anyInt(), anyInt()))
+                .thenReturn(List.of(bookingResponseDto));
+
+        mockMvc.perform(get("/bookings")
+                        .header("X-Sharer-User-Id", user.getId())
+                        .param("state", "ALL")
+                        .param("from", "0")
+                        .param("size", "5")
+                        .content(mapper.writeValueAsString(bookingResponseDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id", is(bookingResponseDto.getId()), Integer.class))
+                .andExpect(jsonPath("$[0].booker", is(bookingResponseDto.getBooker()), User.class))
+                .andExpect(jsonPath("$[0].item", is(bookingResponseDto.getItem()), Item.class));
+
+        verify(bookingService, times(1))
+                .findBookingByUser(anyInt(), anyString(), anyInt(), anyInt());
     }
 
-    @GetMapping
-    public List<BookingResponseDto> getByUser(
-            @RequestHeader(X_SHARER_USER_ID) int userId,
-            @RequestParam(value = "state", defaultValue = "ALL")
-            String state,
-            @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") int from,
-            @Positive @RequestParam(name = "size", defaultValue = "10") int size
-    ) {
-        log.info("Вызван метод findBookingByUser() в BookingController");
-        return bookingService.findBookingByUser(userId, state, from, size);
+    @Test
+    void getAllByOwnerId() throws Exception {
+        when(bookingService.findBookingByOwner(anyInt(), anyString(), anyInt(), anyInt()))
+                .thenReturn(List.of(bookingResponseDto));
+
+        mockMvc.perform(get("/bookings/owner")
+                        .header("X-Sharer-User-Id", owner.getId())
+                        .param("state", "ALL")
+                        .param("from", "0")
+                        .param("size", "5")
+                        .content(mapper.writeValueAsString(bookingResponseDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id", is(bookingResponseDto.getId()), Integer.class))
+                .andExpect(jsonPath("$[0].booker", is(bookingResponseDto.getBooker()), User.class))
+                .andExpect(jsonPath("$[0].item", is(bookingResponseDto.getItem()), Item.class));
+
+        verify(bookingService, times(1))
+                .findBookingByOwner(anyInt(), anyString(), anyInt(), anyInt());
     }
-
-    @GetMapping("/owner")
-    public List<BookingResponseDto> getByOwner(
-            @RequestHeader(X_SHARER_USER_ID) int userId,
-            @RequestParam(value = "state", defaultValue = "ALL")
-            String state,
-            @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") int from,
-            @Positive @RequestParam(name = "size", defaultValue = "10") int size
-    ) {
-        log.info("Вызван метод findBookingByOwner() в BookingController");
-        return bookingService.findBookingByOwner(userId, state, from, size);
-    }*/
-
-
-
-
 }
