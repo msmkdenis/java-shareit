@@ -18,7 +18,7 @@ public class ItemRequestDtoTest {
     private JacksonTester<ItemRequestDto> json;
 
     @Test
-    void ItemRequestDto() throws IOException {
+    void itemRequestDto() throws IOException {
 
         User user = new User(1, "userName", "user@email.ru");
         ItemRequestDto itemRequestDto = new ItemRequestDto(1, "description", user,

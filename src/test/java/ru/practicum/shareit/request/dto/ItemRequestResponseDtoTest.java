@@ -33,7 +33,7 @@ public class ItemRequestResponseDtoTest {
             null);
 
     @Test
-    void ItemRequestResponseDto() throws IOException {
+    void itemRequestResponseDto() throws IOException {
 
         List<ItemDto> items = new ArrayList<>();
         items.add(itemDto);
