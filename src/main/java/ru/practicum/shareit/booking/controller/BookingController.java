@@ -25,7 +25,7 @@ public class BookingController {
     @PostMapping
     public BookingResponseDto createBooking(
             @RequestHeader(X_SHARER_USER_ID) int userId,
-            @RequestBody BookingRequestDto bookingRequestDto
+            @Validated @RequestBody BookingRequestDto bookingRequestDto
     ) {
         log.info("Вызван метод addBooking() в BookingController");
         return bookingService.addBooking(userId, bookingRequestDto);

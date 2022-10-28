@@ -96,11 +96,23 @@ public class ItemServiceTest {
     @Test
     void deleteItem() {
         when(itemRepository.findById(anyInt())).thenReturn(Optional.of(item));
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
 
-        itemService.deleteItem(ItemMapper.toItemDto(item).getId());
+        itemService.deleteItem(ItemMapper.toItemDto(item), user.getId());
         List<Item> items = itemRepository.findAll();
 
         assertEquals(0, items.size());
+    }
+
+    @Test
+    void deleteItemByNonOwner() {
+        User newUser = new User(2, "userName", "user@email.ru");
+        item.setOwner(newUser);
+        when(itemRepository.findById(anyInt())).thenReturn(Optional.of(item));
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
+
+        assertThrows(EntityNotFoundException.class,
+                () -> itemService.deleteItem(ItemMapper.toItemDto(item), user.getId()));
     }
 
     @Test

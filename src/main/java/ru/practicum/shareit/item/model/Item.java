@@ -30,8 +30,8 @@ public class Item {
     @Column(name = "is_available", nullable = false)
     private Boolean available;
 
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
     @ManyToOne

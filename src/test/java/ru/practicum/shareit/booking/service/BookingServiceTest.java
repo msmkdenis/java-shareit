@@ -59,7 +59,7 @@ public class BookingServiceTest {
                 LocalDateTime.now().plusDays(2),
                 item,
                 user,
-                BookingStatus.WAITING.WAITING);
+                BookingStatus.WAITING);
         bookingResponseDto = new BookingResponseDto(
                 1,
                 LocalDateTime.of(2022, 12, 12, 12, 12, 12),
@@ -128,7 +128,7 @@ public class BookingServiceTest {
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
         when(itemRepository.findById(anyInt())).thenReturn(Optional.of(item));
 
-        ValidationException ex = assertThrows(ValidationException.class,
+        assertThrows(ValidationException.class,
                 () -> bookingService.addBooking(user.getId(), bookingRequestDto));
     }
 
