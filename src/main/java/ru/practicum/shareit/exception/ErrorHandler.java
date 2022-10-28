@@ -29,13 +29,6 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<String> handleUserAlreadyExistException(final UserAlreadyExistsException e) {
-        log.error("UserAlreadyExistException. Произошла ошибка {}, статус ошибки {}", e.getMessage(),
-                HttpStatus.CONFLICT);
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler
     public ResponseEntity<String> handleEntityNotFoundException(final EntityNotFoundException e) {
         log.error("EntityNotFoundException. Произошла ошибка {}, статус ошибки {}", e.getMessage(),
                 HttpStatus.NOT_FOUND);

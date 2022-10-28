@@ -13,6 +13,8 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -31,6 +33,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Transactional(readOnly = true)
     @Override
@@ -74,8 +77,11 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto addItem(ItemDto itemDto, int userId) {
         User owner = checkUser(userId);
         checkItemDto(itemDto);
-        Item item = ItemMapper.toItem(itemDto);
-        item.setOwner(owner);
+        ItemRequest request = null;
+        if (itemDto.getRequestId() != null) {
+            request = checkItemRequest(itemDto.getRequestId());
+        }
+        Item item = ItemMapper.toItem(itemDto, owner, request);
         itemRepository.save(item);
         log.info("Вещь с id = {} сохранена (addItem())", item.getId());
         return ItemMapper.toItemDto(item);
@@ -83,18 +89,17 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional
     public ItemDto updateItem(ItemDto itemDto, int userId, int itemId) {
-        User owner = userRepository.findById(userId).get();
-        Item oldItem = itemRepository.findById(itemId).get();
-        Item newItem = ItemMapper.toItem(itemDto);
+        User owner = checkUser(userId);
+        Item oldItem = checkItem(itemId);
         if (oldItem.getOwner().equals(owner)) {
-            if (newItem.getName() != null) {
-                oldItem.setName(newItem.getName());
+            if (itemDto.getName() != null) {
+                oldItem.setName(itemDto.getName());
             }
-            if (newItem.getDescription() != null) {
-                oldItem.setDescription(newItem.getDescription());
+            if (itemDto.getDescription() != null) {
+                oldItem.setDescription(itemDto.getDescription());
             }
-            if (newItem.getAvailable() != null) {
-                oldItem.setAvailable(newItem.getAvailable());
+            if (itemDto.getAvailable() != null) {
+                oldItem.setAvailable(itemDto.getAvailable());
             }
         } else {
             throw new EntityNotFoundException("Ошибка! Редактировать информацию о вещи может только ее владелец");
@@ -104,10 +109,15 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Transactional
-    public void deleteItem(int id) {
-        Item item = checkItem(id);
-        itemRepository.delete(item);
-        log.info("Вещь с id = {} удалена", id);
+    public void deleteItem(ItemDto itemDto, int userId) {
+        Item item = checkItem(itemDto.getId());
+        User owner = checkUser(userId);
+        if (!item.getOwner().equals(owner)) {
+            throw new EntityNotFoundException("Ошибка! Удалить вещь может только ее владелец");
+        } else {
+            itemRepository.delete(item);
+            log.info("Вещь с id = {} удалена", itemDto.getId());
+        }
     }
 
     public List<ItemDto> search(String text, int userId) {
@@ -173,5 +183,11 @@ public class ItemServiceImpl implements ItemService {
                     String.format("Пользователь id=%d не арендовал вещь id=%d или аренда не завершена!", userId, itemId)
             );
         }
+    }
+
+    private ItemRequest checkItemRequest(int id) {
+        return itemRequestRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Ошибка! " +
+                        "Запрос(request) с id = %s не найден", id)));
     }
 }

@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.repository;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.booking.model.Booking;
@@ -10,7 +11,7 @@ import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
-    List<Booking> findAllByBookerIdOrderByStartDesc(int id);
+    List<Booking> findAllByBookerIdOrderByStartDesc(int id, Pageable pageable);
 
     List<Booking> findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(int userId,
                                                                                  LocalDateTime nowStart,
@@ -42,7 +43,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     List<Booking> findAllByItemsId(int itemId);
 
     @Query("select b from Booking b where b.item.owner.id = ?1 order by b.start desc")
-    List<Booking> findAllByItemsOwnerId(int userId);
+    List<Booking> findAllByItemsOwnerId(int userId, Pageable pageable);
 
     @Query("select b from Booking b where b.item.id = ?1 and " +
             "b.item.owner.id = ?2 and b.start <= ?3 order by b.end desc ")

@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -77,7 +78,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<BookingResponseDto> findBookingByUser(int userId, String state) {
+    public List<BookingResponseDto> findBookingByUser(int userId, String state, int from, int size) {
         checkUser(userId);
         validBookingState(state);
         LocalDateTime now = LocalDateTime.now();
@@ -117,7 +118,9 @@ public class BookingServiceImpl implements BookingService {
                         .collect(Collectors.toList());
                 break;
             case ALL:
-                bookingList = bookingRepository.findAllByBookerIdOrderByStartDesc(userId).stream()
+                bookingList = bookingRepository.findAllByBookerIdOrderByStartDesc(userId,
+                        PageRequest.of(getPageNumber(from, size), size))
+                        .stream()
                         .map(BookingMapper::toBookingResponseDto)
                         .collect(Collectors.toList());
                 break;
@@ -128,7 +131,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<BookingResponseDto> findBookingByOwner(int ownerId, String state) {
+    public List<BookingResponseDto> findBookingByOwner(int ownerId, String state, int from, int size) {
         checkUser(ownerId);
         validBookingState(state);
         LocalDateTime now = LocalDateTime.now();
@@ -165,7 +168,9 @@ public class BookingServiceImpl implements BookingService {
                         .collect(Collectors.toList());
                 break;
             case ALL:
-                bookingList = bookingRepository.findAllByItemsOwnerId(ownerId).stream()
+                bookingList = bookingRepository.findAllByItemsOwnerId(ownerId,
+                        PageRequest.of(getPageNumber(from, size), size))
+                        .stream()
                         .map(BookingMapper::toBookingResponseDto)
                         .collect(Collectors.toList());
                 break;
@@ -209,9 +214,9 @@ public class BookingServiceImpl implements BookingService {
         if (bookingRequestDto.getStart().isBefore(LocalDateTime.now())) {
             throw new ValidationException("Ошибка! Дата начала не может быть раньше текущей даты!");
         }
-        if (bookingRequestDto.getEnd().isBefore(LocalDateTime.now())) {
+/*        if (bookingRequestDto.getEnd().isBefore(LocalDateTime.now())) {
             throw new ValidationException("Ошибка! Дата окончания не может быть раньше текущей даты!");
-        }
+        }*/
     }
 
     private User checkUser(int id) {
@@ -238,5 +243,9 @@ public class BookingServiceImpl implements BookingService {
         } catch (IllegalArgumentException e) {
             throw new MessageFailedException(String.format("Unknown state: %s", state));
         }
+    }
+
+    private int getPageNumber(int from, int size) {
+        return from / size;
     }
 }

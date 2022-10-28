@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
@@ -20,10 +21,6 @@ public class Item {
     @Column(name = "item_id", nullable = false)
     private int id;
 
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
-    private User owner;
-
     @Column(name = "item_name", nullable = false)
     private String name;
 
@@ -33,10 +30,12 @@ public class Item {
     @Column(name = "is_available", nullable = false)
     private Boolean available;
 
-    public Item(int id, String name, String description, Boolean available) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.available = available;
-    }
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
+
+    @ManyToOne
+    @JoinColumn(name = "request_id")
+    private ItemRequest request;
+
 }
