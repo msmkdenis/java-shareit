@@ -58,9 +58,12 @@ public class ItemController {
     }
 
     @DeleteMapping("/{itemId}")
-    public ResponseEntity<HttpStatus> deleteItem(@PathVariable int itemId) {
+    public ResponseEntity<HttpStatus> deleteItem(
+            @Validated @RequestBody ItemDto itemDto,
+            @RequestHeader(X_SHARER_USER_ID) int userId
+    ) {
         log.info("Вызван метод deleteItem() в ItemController");
-        itemService.deleteItem(itemId);
+        itemService.deleteItem(itemDto, userId);
         return ResponseEntity.ok().build();
     }
 

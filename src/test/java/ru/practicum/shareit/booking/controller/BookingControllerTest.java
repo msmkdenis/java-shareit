@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.model.BookingStatus;
@@ -21,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -77,6 +79,23 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$.status", is(bookingResponseDto.getStatus().toString())));
 
         verify(bookingService, times(1)).addBooking(anyInt(), any());
+    }
+
+    @Test
+    void createBookingWithEndIsAfterStart() throws Exception {
+        bookingRequestDto.setStart(LocalDateTime.now().minusDays(1));
+        bookingRequestDto.setEnd(LocalDateTime.now().minusDays(4));
+
+        mockMvc.perform(post("/bookings")
+                        .header("X-Sharer-User-Id", 1)
+                        .content(mapper.writeValueAsString(bookingRequestDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(r -> assertTrue(r.getResolvedException() instanceof MethodArgumentNotValidException));
+
+        verify(bookingService, times(0)).addBooking(anyInt(), any());
     }
 
     @Test

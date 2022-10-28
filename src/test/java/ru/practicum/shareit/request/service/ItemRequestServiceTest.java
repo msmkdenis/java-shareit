@@ -55,7 +55,6 @@ public class ItemRequestServiceTest {
         itemRequestDto = new ItemRequestDto(
                 itemRequest.getId(),
                 itemRequest.getDescription(),
-                itemRequest.getRequester(),
                 itemRequest.getCreated());
     }
 

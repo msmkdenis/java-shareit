@@ -109,10 +109,15 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Transactional
-    public void deleteItem(int id) {
-        Item item = checkItem(id);
-        itemRepository.delete(item);
-        log.info("Вещь с id = {} удалена", id);
+    public void deleteItem(ItemDto itemDto, int userId) {
+        Item item = checkItem(itemDto.getId());
+        User owner = checkUser(userId);
+        if (!item.getOwner().equals(owner)) {
+            throw new EntityNotFoundException("Ошибка! Удалить вещь может только ее владелец");
+        } else {
+            itemRepository.delete(item);
+            log.info("Вещь с id = {} удалена", itemDto.getId());
+        }
     }
 
     public List<ItemDto> search(String text, int userId) {

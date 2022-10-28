@@ -108,7 +108,7 @@ public class ItemControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        verify(itemService, times(1)).deleteItem(anyInt());
+        verify(itemService, times(1)).deleteItem(any(), anyInt());
     }
 
     @Test

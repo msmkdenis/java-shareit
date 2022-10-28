@@ -48,7 +48,7 @@ class ItemRequestControllerTest {
         itemRequestResponseDto = new ItemRequestResponseDto(1, "description",
                 LocalDateTime.of(2022, 12, 12, 12, 12, 12), null);
         itemRequestDto = new ItemRequestDto(itemRequestResponseDto.getId(),
-                itemRequestResponseDto.getDescription(), user,
+                itemRequestResponseDto.getDescription(),
                 LocalDateTime.of(2022, 12, 12, 12, 12, 12));
     }
 
