@@ -139,7 +139,7 @@ public class ItemServiceTest {
         when(userRepository.existsById(anyInt())).thenReturn(true);
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
         when(userRepository.save(any())).thenReturn(user);
-        when(itemRepository.findItemsByOwnerId(user.getId(), Pageable.ofSize(15)))
+        when(itemRepository.findItemsByOwnerIdOrderById(user.getId(), Pageable.ofSize(15)))
                 .thenReturn(Collections.singletonList(item));
         when(bookingRepository.findAllByItemsId(anyInt())).thenReturn(Collections.emptyList());
         when(commentRepository.findCommentsByItemId(anyInt())).thenReturn(Collections.emptyList());

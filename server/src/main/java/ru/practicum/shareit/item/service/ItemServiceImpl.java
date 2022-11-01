@@ -39,7 +39,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemResponseDto> findAll(int userId, int from, int size) {
         checkUser(userId);
-        List<Item> itemList = itemRepository.findItemsByOwnerId(userId, PageRequest.of(getPageNumber(from, size), size));
+        List<Item> itemList = itemRepository.findItemsByOwnerIdOrderById(userId, PageRequest.of(getPageNumber(from, size), size));
         List<ItemResponseDto> itemDtoResponseList = new ArrayList<>();
         for (Item item : itemList) {
             ItemResponseDto itemResponseDto = getItemResponseDto(item, userId);
