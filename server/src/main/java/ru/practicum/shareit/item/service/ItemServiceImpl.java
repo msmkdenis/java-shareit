@@ -21,7 +21,6 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -123,11 +122,8 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> search(String text, int userId, int from, int size) {
         userRepository.findById(userId);
         log.info("Поиск вещи с параметром text = {}", text);
-        if (!text.isBlank()) {
-            return itemRepository.searchItemsByText(text, PageRequest.of(getPageNumber(from, size), size))
-                    .stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
-        }
-        return Collections.emptyList();
+        return itemRepository.searchItemsByText(text, PageRequest.of(getPageNumber(from, size), size))
+                .stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
     private Item checkItem(int itemId) {

@@ -39,7 +39,6 @@ public class BookingServiceImpl implements BookingService {
     public BookingResponseDto addBooking(int userId, BookingRequestDto bookingRequestDto) {
         User booker = checkUser(userId);
         Item item = checkItem(bookingRequestDto.getItemId());
-        checkStartAndEnd(bookingRequestDto);
         checkItemOwner(userId, item);
         checkItemAvailable(item);
         Booking booking = BookingMapper.toBooking(bookingRequestDto);
@@ -214,18 +213,6 @@ public class BookingServiceImpl implements BookingService {
         if (!item.getAvailable()) {
             throw new ValidateException(String.format("Ошибка! Вещь id=%d не доступна для бронирования!", item.getId()));
         }
-    }
-
-    private void checkStartAndEnd(BookingRequestDto bookingRequestDto) {
-        if (bookingRequestDto.getStart().isAfter(bookingRequestDto.getEnd())) {
-            throw new ValidateException("Ошибка! Дата окончания не может быть раньше даты старта!");
-        }
-        if (bookingRequestDto.getStart().isBefore(LocalDateTime.now())) {
-            throw new ValidateException("Ошибка! Дата начала не может быть раньше текущей даты!");
-        }
-/*        if (bookingRequestDto.getEnd().isBefore(LocalDateTime.now())) {
-            throw new ValidationException("Ошибка! Дата окончания не может быть раньше текущей даты!");
-        }*/
     }
 
     private User checkUser(int id) {

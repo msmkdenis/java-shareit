@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 
+import javax.validation.ValidationException;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
@@ -25,6 +26,7 @@ public class BookingController {
             @RequestHeader(X_SHARER_USER_ID) int userId,
             @Validated @RequestBody BookingRequestDto bookingRequestDto
     ) {
+        checkStartAndEnd(bookingRequestDto);
         log.info("Вызван метод addBooking() в BookingController");
         return bookingClient.createBooking(userId, bookingRequestDto);
     }
@@ -70,5 +72,14 @@ public class BookingController {
     ) {
         log.info("Вызван метод findBookingByOwner() в BookingController");
         return bookingClient.findBookingByOwner(userId, state, from, size);
+    }
+
+    private void checkStartAndEnd(BookingRequestDto bookingRequestDto) {
+        if (bookingRequestDto.getStart().isAfter(bookingRequestDto.getEnd())) {
+            throw new ValidationException("Ошибка! Дата окончания не может быть ранее даты старта!");
+        }
+        if (bookingRequestDto.getStart().isEqual(bookingRequestDto.getEnd())) {
+            throw new ValidationException("Ошибка! Дата начала не может быть равна дате окончания!");
+        }
     }
 }

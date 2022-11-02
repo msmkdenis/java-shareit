@@ -14,7 +14,6 @@ import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.BookingStateException;
 import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.exception.MessageFailedException;
-import ru.practicum.shareit.exception.ValidateException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
@@ -99,37 +98,6 @@ public class BookingServiceTest {
         Exception ex = assertThrows(EntityNotFoundException.class,
                 () -> bookingService.addBooking(user.getId(), bookingRequestDto));
         assertEquals("Ошибка! Пользователь с id = 1 не найден", ex.getMessage());
-    }
-
-    @Test
-    void addBookingWhenEndIsBeforeStart() {
-        bookingRequestDto.setEnd(booking.getStart().minusDays(10));
-        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
-        when(itemRepository.findById(anyInt())).thenReturn(Optional.of(item));
-
-        assertThrows(ValidateException.class,
-                () -> bookingService.addBooking(user.getId(), bookingRequestDto));
-    }
-
-    @Test
-    void addBookingWhenStartIsBeforeNow() {
-        bookingRequestDto.setStart(LocalDateTime.now().minusDays(1));
-        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
-        when(itemRepository.findById(anyInt())).thenReturn(Optional.of(item));
-
-        assertThrows(ValidateException.class,
-                () -> bookingService.addBooking(user.getId(), bookingRequestDto));
-    }
-
-    @Test
-    void addBookingWhenEndIsBeforeNow() {
-        bookingRequestDto.setStart(LocalDateTime.now().minusDays(1));
-        bookingRequestDto.setEnd(LocalDateTime.now().minusDays(1));
-        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
-        when(itemRepository.findById(anyInt())).thenReturn(Optional.of(item));
-
-        assertThrows(ValidateException.class,
-                () -> bookingService.addBooking(user.getId(), bookingRequestDto));
     }
 
     @Test

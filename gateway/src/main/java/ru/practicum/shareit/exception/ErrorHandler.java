@@ -7,6 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
 
 @ControllerAdvice
@@ -39,5 +40,12 @@ public class ErrorHandler {
         log.error("BookingStateException. Произошла ошибка {}, статус ошибки {}", e.getMessage(),
                 HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>("Unknown state: UNSUPPORTED_STATUS", HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    protected ResponseEntity<String> handleConstraintViolation(final ConstraintViolationException e) {
+        log.error("ConstraintViolationException. Произошла ошибка {}, статус ошибки {}", e.getMessage(),
+                HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
