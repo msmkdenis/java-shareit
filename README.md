@@ -1,2 +1,2 @@
 # java-shareit
-Sprint 14: add-bookings.
+Sprint 16: add-docker.
